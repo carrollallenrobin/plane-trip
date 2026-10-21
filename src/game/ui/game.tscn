@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/game/ui/game.gd" id="1_game"]
+[ext_resource type="Resource" path="res://data/missions/clear_the_sky_entry.tres" id="2_m0"]
+[ext_resource type="Resource" path="res://data/missions/strike_the_depot_entry.tres" id="2_m1"]
+[ext_resource type="Resource" path="res://data/missions/hold_the_line_entry.tres" id="3_m2"]
+[ext_resource type="Resource" path="res://data/missions/the_big_show_entry.tres" id="3_m3"]
+[ext_resource type="Resource" path="res://data/fittings/bomb_rack.tres" id="4_rack"]
+[ext_resource type="Resource" path="res://data/fittings/ammunition_box.tres" id="5_box"]
+[ext_resource type="Resource" path="res://data/fittings/fuel_tank.tres" id="6_tank"]
+[ext_resource type="Resource" path="res://data/fittings/armour_plate.tres" id="7_plate"]
+
+[node name="Game" type="Node"]
+script = ExtResource("1_game")
+missions = Array[ExtResource("2_m1")]([ExtResource("2_m0"), ExtResource("2_m1"), ExtResource("3_m2"), ExtResource("3_m3")])
+fittings = Array[ExtResource("4_rack")]([ExtResource("4_rack"), ExtResource("5_box"), ExtResource("6_tank"), ExtResource("7_plate")])

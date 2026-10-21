@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="MissionDefinition" format=3 uid="uid://cepuaunoc7t1e"]
+
+[ext_resource type="Script" uid="uid://dre3ehf2lbqs2" path="res://src/sim/mission/mission_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://fo88ky18w4nr" path="res://src/sim/mission/objective.gd" id="2"]
+[ext_resource type="Script" path="res://src/sim/flight/loadout.gd" id="4"]
+[ext_resource type="Resource" path="res://data/loadouts/interceptor.tres" id="3"]
+
+[sub_resource type="Resource" id="obj_depot"]
+script = ExtResource("2")
+target_name = "Depot"
+title = "Destroy the enemy depot"
+
+[sub_resource type="Resource" id="obj_hangar"]
+script = ExtResource("2")
+target_name = "EnemyHangar"
+required = false
+title = "Destroy the enemy hangar"
+
+[resource]
+script = ExtResource("1")
+title = "Strike the Depot"
+briefing = "Red has a depot behind the hills to the east, under flak. Bomb it, and watch for their fighters: three up at a time, guns only. Two of ours fly with you."
+objectives = Array[ExtResource("2")]([SubResource("obj_depot"), SubResource("obj_hangar")])
+enemy_pool = 6
+enemy_aloft = 3
+enemy_loadouts = Array[ExtResource("4")]([ExtResource("3")])
+wingmen_aloft = 2
+wingmen_loadouts = Array[ExtResource("4")]([ExtResource("3")])
+spawn_interval = 6.0
+first_launch_delay = 5.0

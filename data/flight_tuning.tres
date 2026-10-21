@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="FlightTuning" format=3 uid="uid://d1ahj6an71dsi"]
+
+[ext_resource type="Script" uid="uid://drj0ju57okekw" path="res://src/sim/flight/flight_tuning.gd" id="1"]
+
+[resource]
+script = ExtResource("1")

@@ -1,0 +1,121 @@
+name: publish to Itch.io
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A push while a deploy is running waits for it; two butler pushes at once would race.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  BUILD_DIR: build/webgl
+  # The same build scripts/fetch-godot.sh pins; the action wants it without "-stable".
+  GODOT_VERSION: 4.7.2
+  GDTOOLKIT_VERSION: 4.5.0
+
+jobs:
+  check:
+    name: lint and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - uses: chickensoft-games/setup-godot@v2
+        name: Setup Godot
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.0  # no moving major tag on this action
+
+      - name: Install gdtoolkit
+        run: uv tool install gdtoolkit==${{ env.GDTOOLKIT_VERSION }}
+
+      - name: Lint
+        run: scripts/lint.sh
+
+      - name: Test
+        env:
+          GODOT_BIN: godot
+        run: scripts/test.sh
+
+  build-webgl:
+    name: export web build
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - uses: chickensoft-games/setup-godot@v2
+        name: Setup Godot
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: true
+
+      - name: Verify Setup
+        run: godot --version
+
+      - name: Export Web
+        env:
+          GODOT_BIN: godot
+        # scripts/godot-env.sh keeps Godot's data under .tools/ for sandboxes; the action
+        # installed the export templates in the runner's real data directory, so point
+        # Godot back at it here.
+        run: |
+          export XDG_DATA_HOME="$HOME/.local/share"
+          scripts/export-web.sh
+
+      - name: Upload Build
+        uses: actions/upload-artifact@v7
+        with:
+          name: WebGL-Build
+          path: ${{ env.BUILD_DIR }}/*
+          if-no-files-found: error
+
+  deploy-itch:
+    name: push to itch.io
+    needs: build-webgl
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download WebGL Build
+        uses: actions/download-artifact@v8
+        with:
+          name: WebGL-Build
+          path: ${{ env.BUILD_DIR }}
+
+      # From itch's own download host as the butler docs say (broth.itch.zone, not .ovh),
+      # at a pinned version with its hash checked, like every other tool here. The zip holds
+      # the binary and its two 7z libraries; they stay together.
+      - name: Install Butler
+        env:
+          BUTLER_VERSION: 15.32.0
+          BUTLER_SHA256: 2335971394ef6596f95ded0833e85ee28755e13761716ef4c91d6b11f69162f5
+        run: |
+          curl -sSL -o butler.zip "https://broth.itch.zone/butler/linux-amd64/$BUTLER_VERSION/archive/default"
+          echo "$BUTLER_SHA256  butler.zip" | sha256sum -c -
+          unzip -q butler.zip -d "$HOME/butler"
+          chmod +x "$HOME/butler/butler"
+          echo "$HOME/butler" >> "$GITHUB_PATH"
+          "$HOME/butler/butler" -V
+
+      - name: Deploy to itch.io
+        run: |
+          butler push "$BUILD_DIR" "$ITCH_IO_USERNAME/$ITCH_IO_GAME_NAME:html" \
+            --userversion "${GITHUB_SHA::12}"
+        env:
+          BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
+          ITCH_IO_USERNAME: ${{ vars.ITCH_IO_USERNAME }}
+          ITCH_IO_GAME_NAME: ${{ vars.ITCH_IO_GAME_NAME }}

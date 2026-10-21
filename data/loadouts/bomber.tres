@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Loadout" format=3]
+
+[ext_resource type="Script" path="res://src/sim/flight/loadout.gd" id="1"]
+[ext_resource type="Resource" path="res://data/fittings/bomb_rack.tres" id="2_rack"]
+[ext_resource type="Resource" path="res://data/fittings/ammunition_box.tres" id="3_box"]
+[ext_resource type="Resource" path="res://data/fittings/fuel_tank.tres" id="4_tank"]
+
+[resource]
+script = ExtResource("1")
+fittings = Array[ExtResource("2_rack")]([ExtResource("2_rack"), ExtResource("2_rack"), ExtResource("2_rack"), ExtResource("3_box"), ExtResource("4_tank"), ExtResource("4_tank")])

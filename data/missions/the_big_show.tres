@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="MissionDefinition" format=3]
+
+[ext_resource type="Script" path="res://src/sim/mission/mission_definition.gd" id="1"]
+[ext_resource type="Script" path="res://src/sim/mission/objective.gd" id="2"]
+[ext_resource type="Script" path="res://src/sim/flight/loadout.gd" id="4"]
+[ext_resource type="Resource" path="res://data/loadouts/interceptor.tres" id="3"]
+[ext_resource type="Resource" path="res://data/loadouts/bomber.tres" id="5"]
+
+[sub_resource type="Resource" id="obj_six"]
+script = ExtResource("2")
+kind = 3
+count = 6
+title = "Shoot down six of their planes"
+
+[resource]
+script = ExtResource("1")
+title = "The Big Show"
+briefing = "Red is putting up five at a time, two of them carrying bombs for our hangar. Four of ours fly with you. Six of theirs are yours to down. Keep the hangar standing or you fly alone."
+objectives = Array[ExtResource("2")]([SubResource("obj_six")])
+enemy_pool = 0
+enemy_aloft = 5
+enemy_loadouts = Array[ExtResource("4")]([ExtResource("3"), ExtResource("3"), ExtResource("5"), ExtResource("3"), ExtResource("5")])
+wingmen_aloft = 4
+wingmen_pool = 0
+wingmen_loadouts = Array[ExtResource("4")]([ExtResource("3")])
+spawn_interval = 6.0
+first_launch_delay = 5.0

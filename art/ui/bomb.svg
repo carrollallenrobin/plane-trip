@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="48" viewBox="0 0 24 48">
+  <!-- A Bomb silhouette, nose down, for the Instrument Panel's bomb row (ADR 0008). -->
+  <path d="M 9 2 L 15 2 L 15 10 L 9 10 Z" fill="#e6dec7"/>
+  <path d="M 4 6 L 9 10 L 9 2 Z M 20 6 L 15 10 L 15 2 Z" fill="#e6dec7"/>
+  <path d="M 7 10 L 17 10 L 17 32 Q 12 46 12 46 Q 7 32 7 32 Z" fill="#e6dec7"/>
+</svg>

@@ -1,0 +1,4 @@
+presets = ["claude-code"]
+
+[vm]
+image = "docker/sandbox-templates:claude-code"

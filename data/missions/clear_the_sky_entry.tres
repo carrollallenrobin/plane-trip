@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MissionEntry" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/game/ui/mission_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://missions/clear_the_sky.tscn" id="2"]
+[ext_resource type="Resource" path="res://data/missions/clear_the_sky.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "clear_the_sky"
+scene = ExtResource("2")
+mission = ExtResource("3")

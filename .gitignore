@@ -1,0 +1,10 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+build
+.DS_Store
+# gdUnit4 reports and local tooling
+/reports/
+/.tools/
+.claude/settings.local.json
+__pycache__/

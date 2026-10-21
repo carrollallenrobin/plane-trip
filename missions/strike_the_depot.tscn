@@ -1,0 +1,121 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/game/world_node.gd" id="1_world"]
+[ext_resource type="Script" path="res://src/game/terrain_node.gd" id="2_terrain"]
+[ext_resource type="Script" path="res://src/game/airfield_node.gd" id="3_airfield"]
+[ext_resource type="Script" path="res://src/game/plane_node.gd" id="4_plane"]
+[ext_resource type="Script" path="res://src/game/follow_camera.gd" id="5_camera"]
+[ext_resource type="Script" path="res://src/game/debug_overlay.gd" id="6_overlay"]
+[ext_resource type="Resource" path="res://data/loadouts/fighter.tres" id="7_fighter"]
+[ext_resource type="Resource" path="res://data/airframe.tres" id="10_airframe"]
+[ext_resource type="Script" path="res://src/game/projectiles_node.gd" id="8_projectiles"]
+[ext_resource type="Resource" path="res://data/flight_tuning.tres" id="9_tuning"]
+[ext_resource type="Script" path="res://src/game/ground_target_node.gd" id="11_target"]
+[ext_resource type="Script" path="res://src/game/instruments/instrument_panel.gd" id="12_instruments"]
+[ext_resource type="PackedScene" path="res://src/game/backdrop/backdrop.tscn" id="14_backdrop"]
+[ext_resource type="Resource" path="res://data/missions/strike_the_depot.tres" id="13_mission"]
+[ext_resource type="Environment" path="res://data/environment.tres" id="env"]
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_world")
+width = 1040.0
+flight_tuning = ExtResource("9_tuning")
+airframe = ExtResource("10_airframe")
+mission = ExtResource("13_mission")
+
+[node name="Backdrop" parent="." instance=ExtResource("14_backdrop")]
+front_line = false
+
+[node name="Terrain" type="Node3D" parent="."]
+script = ExtResource("2_terrain")
+points = PackedVector2Array(0, 10, 20, 10, 100, 10, 160, 10, 220, 30, 300, 55, 360, 40, 420, 10, 520, 10, 600, 25, 680, 70, 780, 45, 840, 10, 1020, 10, 1040, 10)
+water_spans = Array[Vector2]([Vector2(430, 510)])
+
+[node name="HomeAirfield" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 10, 0)
+script = ExtResource("3_airfield")
+side = 1
+length = 80.0
+
+[node name="EnemyAirfield" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 860, 10, 0)
+script = ExtResource("3_airfield")
+side = 0
+length = 80.0
+heading_right = false
+
+[node name="HomeHangar" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 10, 0)
+script = ExtResource("11_target")
+kind = 3
+side = 1
+width = 16.0
+height = 7.0
+
+[node name="FuelStore" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160, 10, 0)
+script = ExtResource("11_target")
+kind = 0
+side = 1
+width = 12.0
+height = 6.0
+
+[node name="AAGun" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 560, 10, 0)
+script = ExtResource("11_target")
+kind = 1
+side = 0
+width = 6.0
+height = 4.0
+
+[node name="Flak" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 800, 32, 0)
+script = ExtResource("11_target")
+kind = 2
+side = 0
+width = 6.0
+height = 4.0
+
+[node name="Depot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 830, 15, 0)
+script = ExtResource("11_target")
+kind = 0
+side = 0
+width = 14.0
+height = 8.0
+
+[node name="EnemyHangar" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 952, 10, 0)
+script = ExtResource("11_target")
+kind = 3
+side = 0
+width = 16.0
+height = 7.0
+
+[node name="Player" type="Node3D" parent="."]
+script = ExtResource("4_plane")
+loadout = ExtResource("7_fighter")
+side = 1
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 60, 205)
+fov = 25.0
+near = 10.0
+far = 5000.0
+script = ExtResource("5_camera")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 100, 100)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("env")
+
+[node name="DebugOverlay" type="CanvasLayer" parent="."]
+script = ExtResource("6_overlay")
+
+[node name="Projectiles" type="Node3D" parent="."]
+script = ExtResource("8_projectiles")
+
+[node name="InstrumentPanel" type="CanvasLayer" parent="."]
+script = ExtResource("12_instruments")
