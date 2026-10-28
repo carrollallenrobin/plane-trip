@@ -1,4 +1,4 @@
-name: publish to Itch.io
+name: publish to GitHub Pages
 
 on:
   push:
@@ -9,9 +9,9 @@ on:
 permissions:
   contents: read
 
-# A push while a deploy is running waits for it; two butler pushes at once would race.
+# A push while a deploy is running waits for it, so two Pages deploys never overlap.
 concurrency:
-  group: deploy
+  group: pages
   cancel-in-progress: false
 
 env:
@@ -77,45 +77,25 @@ jobs:
           export XDG_DATA_HOME="$HOME/.local/share"
           scripts/export-web.sh
 
-      - name: Upload Build
-        uses: actions/upload-artifact@v7
+      # Pages publishes this directory as the site root. deploy-pages picks the
+      # artifact up by its default name; this job does not need to download it.
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
         with:
-          name: WebGL-Build
-          path: ${{ env.BUILD_DIR }}/*
-          if-no-files-found: error
-
-  deploy-itch:
-    name: push to itch.io
-    needs: build-webgl
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download WebGL Build
-        uses: actions/download-artifact@v8
-        with:
-          name: WebGL-Build
           path: ${{ env.BUILD_DIR }}
 
-      # From itch's own download host as the butler docs say (broth.itch.zone, not .ovh),
-      # at a pinned version with its hash checked, like every other tool here. The zip holds
-      # the binary and its two 7z libraries; they stay together.
-      - name: Install Butler
-        env:
-          BUTLER_VERSION: 15.32.0
-          BUTLER_SHA256: 2335971394ef6596f95ded0833e85ee28755e13761716ef4c91d6b11f69162f5
-        run: |
-          curl -sSL -o butler.zip "https://broth.itch.zone/butler/linux-amd64/$BUTLER_VERSION/archive/default"
-          echo "$BUTLER_SHA256  butler.zip" | sha256sum -c -
-          unzip -q butler.zip -d "$HOME/butler"
-          chmod +x "$HOME/butler/butler"
-          echo "$HOME/butler" >> "$GITHUB_PATH"
-          "$HOME/butler/butler" -V
-
-      - name: Deploy to itch.io
-        run: |
-          butler push "$BUILD_DIR" "$ITCH_IO_USERNAME/$ITCH_IO_GAME_NAME:html" \
-            --userversion "${GITHUB_SHA::12}"
-        env:
-          BUTLER_API_KEY: ${{ secrets.ITCH_IO_API_KEY }}
-          ITCH_IO_USERNAME: ${{ vars.ITCH_IO_USERNAME }}
-          ITCH_IO_GAME_NAME: ${{ vars.ITCH_IO_GAME_NAME }}
+  deploy-pages:
+    name: deploy to GitHub Pages
+    needs: build-webgl
+    runs-on: ubuntu-latest
+    # Job permissions replace the workflow's, so these two are the whole set.
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

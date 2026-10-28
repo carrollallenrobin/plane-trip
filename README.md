@@ -4,7 +4,7 @@ A single-player, side-view aerial combat game in the spirit of Triplane Turmoil.
 
 This is a Ludum Dare 60 Jam entry.
 
-**[Play it in the browser](https://boids.itch.io/plane-trip)**
+**[Play it in the browser](https://carrollallenrobin.github.io/plane-trip/)**
 
 ![A blue triplane on the runway of its airfield, mountains behind, the instrument panel and the objectives slip in front](promo/screenshot.jpg)
 
@@ -60,7 +60,7 @@ scripts/serve-web.sh [port]          # serve build/webgl/ with cross-origin isol
 scripts/fetch-export-templates.sh    # install the Web export templates for the pinned Godot
 ```
 
-The Web build runs with threads, so it needs the cross-origin isolation headers; `scripts/serve-web.sh` sets them, a plain static server shows an error page. The export templates are about 1.3 GB, downloaded once. Test reports land in `reports/`.
+The Web build runs with threads, so it needs cross-origin isolation. `scripts/serve-web.sh` sends the headers. A host that cannot, including GitHub Pages, still runs the build: the export is a progressive web app and its service worker adds the headers. The export templates are about 1.3 GB, downloaded once. Test reports land in `reports/`.
 
 ## How it is put together
 
@@ -82,7 +82,7 @@ For the reasoning behind it: [`CONTEXT.md`](CONTEXT.md) is the glossary, [`docs/
 
 ## Releasing
 
-Every push to `main` runs `.github/workflows/deploy.yml`: lint, tests, the Web export, then `butler push` to itch.io on the `html` channel, tagged with the commit. The repository needs the secret `ITCH_IO_API_KEY` and the variables `ITCH_IO_USERNAME` and `ITCH_IO_GAME_NAME`. The itch.io page must have SharedArrayBuffer support enabled in its embed options, or the threaded build shows an error instead of the game.
+Every push to `main` runs `.github/workflows/deploy.yml`: lint, tests, the Web export, then a deploy to [GitHub Pages](https://carrollallenrobin.github.io/plane-trip/). Pages must be set to build from GitHub Actions (Settings → Pages → Build and deployment → Source: GitHub Actions); the first run fails until that is set. A public repository can use Pages on the free plan. A private one needs GitHub Pro or higher.
 
 Upgrading tools:
 
@@ -91,7 +91,6 @@ Upgrading tools:
 - gdtoolkit: `uv tool install gdtoolkit==<version>`, then the workflow and this README.
 - Fonts: the commit and hashes in `scripts/fetch-fonts.sh`; run it and commit the files.
 - numpy and matplotlib: the pins in `scripts/sound-env.sh`.
-- butler: `BUTLER_VERSION` and `BUTLER_SHA256` in the workflow, from https://broth.itch.zone/butler/linux-amd64/versions.
 
 ## Licence
 
